@@ -29,7 +29,7 @@ VERSION_FILENAME = os.path.join(
     "src",
     "opentelemetry",
     "instrumentation",
-    "kser_sequencing",
+    "kser",
     "version.py",
 )
 with open(VERSION_FILENAME) as f:
@@ -40,7 +40,7 @@ PACKAGE_FILENAME = os.path.join(
     "src",
     "opentelemetry",
     "instrumentation",
-    "kser_sequencing",
+    "kser",
     "package.py",
 )
 with open(PACKAGE_FILENAME) as f:
@@ -81,4 +81,5 @@ setuptools.setup(
     cmdclass={"meta": JSONMetadataCommand},
     version=PACKAGE_INFO["__version__"],
     extras_require=extras_require,
+    long_description=open('README.rst', 'r').read().strip(),
 )
