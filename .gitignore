@@ -1,0 +1,10 @@
+/src/*.egg-info/
+/.idea/
+/dist/
+/.eggs/
+/tests/
+/docs/_build/
+__pycache__
+/build/
+.jira-release.yml
+.changelog.json
