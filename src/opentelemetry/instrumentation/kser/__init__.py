@@ -39,20 +39,26 @@ def _wtrigger(tracer, wrapped, instance, args, kwargs):
     if trigger_name.startswith('_'):
         trigger_name = trigger_name[1:]
     sname = f"{instance.__class__.__name__}[{instance.uuid}].{trigger_name}"
+    if isinstance(instance, kser.sequencing.operation.Operation):
+        prefix = "oper"
+    else:
+        prefix = "task"
     with tracer.start_as_current_span(sname, kind=SpanKind.INTERNAL) as span:
         if span.is_recording():
-            span.set_attribute('uuid', instance.uuid)
-            span.set_attribute('status', instance.status)
-            span.set_attribute('name', instance.__class__.path)
-            span.set_attribute('trigger', trigger_name)
+            span.set_attribute(f'{prefix}.uuid', instance.uuid)
+            span.set_attribute(f'{prefix}.status', instance.status)
+            span.set_attribute(f'{prefix}.name', instance.__class__.path)
+            span.set_attribute(f'{prefix}.trigger', trigger_name)
 
         result = wrapped(*args, **kwargs)
         if isinstance(result, Result):
             if span.is_recording():
-                span.set_attribute("retcode", result.retcode)
-                span.set_attribute("stdout", result.stdout)
-                span.set_attribute("stderr", result.stderr)
-                span.set_attribute("retval", json.dumps(result.retval))
+                span.set_attribute(f'{prefix}.retcode', result.retcode)
+                span.set_attribute(f'{prefix}.stdout', result.stdout)
+                span.set_attribute(f'{prefix}.stderr', result.stderr)
+                span.set_attribute(
+                    f'{prefix}.retval', json.dumps(result.retval)
+                )
         return result
 
 
@@ -69,7 +75,7 @@ class KserInstrumentor(BaseInstrumentor):
         tracer = get_tracer(__name__, __version__, tracer_provider)
 
         # tasks & operations
-        _wrap(kser, "entry.Entrypoint._post_init", _wtrigger(tracer))
+        # _wrap(kser, "entry.Entrypoint._post_init", _wtrigger(tracer))
         _wrap(kser, "entry.Entrypoint._prerun", _wtrigger(tracer))
         _wrap(kser, "entry.Entrypoint._postrun", _wtrigger(tracer))
         _wrap(kser, "entry.Entrypoint._run", _wtrigger(tracer))
@@ -108,7 +114,7 @@ class KserInstrumentor(BaseInstrumentor):
         )
 
     def _uninstrument(self, **kwargs):
-        unwrap(kser.entry.Entrypoint, "_post_init")
+        # unwrap(kser.entry.Entrypoint, "_post_init")
         unwrap(kser.entry.Entrypoint, "_prerun")
         unwrap(kser.entry.Entrypoint, "_postrun")
         unwrap(kser.entry.Entrypoint, "_run")
