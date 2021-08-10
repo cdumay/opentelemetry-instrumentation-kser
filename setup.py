@@ -29,7 +29,7 @@ VERSION_FILENAME = os.path.join(
     "src",
     "opentelemetry",
     "instrumentation",
-    "kser",
+    "kser_sequencing",
     "version.py",
 )
 with open(VERSION_FILENAME) as f:
@@ -40,7 +40,7 @@ PACKAGE_FILENAME = os.path.join(
     "src",
     "opentelemetry",
     "instrumentation",
-    "kser",
+    "kser_sequencing",
     "package.py",
 )
 with open(PACKAGE_FILENAME) as f:

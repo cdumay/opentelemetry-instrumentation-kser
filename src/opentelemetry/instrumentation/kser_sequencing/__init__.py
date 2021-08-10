@@ -12,8 +12,8 @@ from typing import Collection
 import kser
 from cdumay_result import Result
 from opentelemetry.instrumentation.instrumentor import BaseInstrumentor
-from opentelemetry.instrumentation.kser.package import _instruments
-from opentelemetry.instrumentation.kser.version import __version__
+from opentelemetry.instrumentation.kser_sequencing.package import _instruments
+from opentelemetry.instrumentation.kser_sequencing.version import __version__
 from opentelemetry.instrumentation.utils import unwrap
 from opentelemetry.trace import SpanKind, get_tracer
 from wrapt import wrap_function_wrapper as _wrap
