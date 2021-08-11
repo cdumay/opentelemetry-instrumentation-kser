@@ -38,7 +38,7 @@ def _wtrigger(tracer, wrapped, instance, args, kwargs):
     trigger_name = wrapped.__name__
     if trigger_name.startswith('_'):
         trigger_name = trigger_name[1:]
-    sname = f"{instance.__class__.__name__}[{instance.uuid}].{trigger_name}"
+    sname = f"{instance.__class__.__name__}.{trigger_name}"
     if isinstance(instance, kser.sequencing.operation.Operation):
         prefix = "oper"
     else:
