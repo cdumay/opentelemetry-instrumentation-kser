@@ -9,6 +9,7 @@
 import json
 from typing import Collection
 
+from kser import __version__ as kversion, __hostname__
 import kser.entry
 import kser.sequencing.operation
 from cdumay_result import Result
@@ -45,10 +46,16 @@ def _wtrigger(tracer, wrapped, instance, args, kwargs):
         prefix = "task"
     with tracer.start_as_current_span(sname, kind=SpanKind.INTERNAL) as span:
         if span.is_recording():
+            span.set_attribute(f'kser.hostname', __hostname__)
+            span.set_attribute(f'kser.version', kversion)
             span.set_attribute(f'{prefix}.uuid', instance.uuid)
             span.set_attribute(f'{prefix}.status', instance.status)
             span.set_attribute(f'{prefix}.name', instance.__class__.path)
             span.set_attribute(f'{prefix}.trigger', trigger_name)
+            span.set_attribute(f'{prefix}.params', json.dumps(instance.params))
+            span.set_attribute(
+                f'{prefix}.metadata', json.dumps(instance.metadata)
+            )
 
         result = wrapped(*args, **kwargs)
         if isinstance(result, Result):
