@@ -9,14 +9,16 @@
 import json
 from typing import Collection
 
-from kser import __version__ as kversion, __hostname__
 import kser.entry
 import kser.sequencing.operation
 from cdumay_result import Result
+from kser import __version__ as kversion, __hostname__
+from kser.schemas import Message
 from opentelemetry.instrumentation.instrumentor import BaseInstrumentor
 from opentelemetry.instrumentation.kser.package import _instruments
 from opentelemetry.instrumentation.kser.version import __version__
 from opentelemetry.instrumentation.utils import unwrap
+from opentelemetry.propagate import get_global_textmap
 from opentelemetry.trace import SpanKind, get_tracer
 from wrapt import wrap_function_wrapper as _wrap
 
@@ -34,6 +36,16 @@ def _with_tracer_wrapper(func):
 
 
 @_with_tracer_wrapper
+def _winject(_tracer, wrapped, instance, args, kwargs):
+    """Inject current trace context into message"""
+    trace_info = dict()
+    get_global_textmap().inject(carrier=trace_info)
+    if len(trace_info) != 0:
+        instance.metadata.update(tracing=trace_info)
+    return wrapped(*args, **kwargs)
+
+
+@_with_tracer_wrapper
 def _wtrigger(tracer, wrapped, instance, args, kwargs):
     """Wrap task triggers"""
     trigger_name = wrapped.__name__
@@ -44,7 +56,14 @@ def _wtrigger(tracer, wrapped, instance, args, kwargs):
         prefix = "oper"
     else:
         prefix = "task"
-    with tracer.start_as_current_span(sname, kind=SpanKind.INTERNAL) as span:
+
+    context = None
+    if "tracing" in instance.metadata:
+        tracing = instance.metadata.pop("tracing")
+        context = get_global_textmap().extract(carrier=tracing)
+
+    with tracer.start_as_current_span(
+            sname, context=context, kind=SpanKind.INTERNAL) as span:
         if span.is_recording():
             span.set_attribute(f'kser.hostname', __hostname__)
             span.set_attribute(f'kser.version', kversion)
@@ -80,6 +99,10 @@ class KserInstrumentor(BaseInstrumentor):
     def _instrument(self, **kwargs):
         tracer_provider = kwargs.get("tracer_provider")
         tracer = get_tracer(__name__, __version__, tracer_provider)
+
+        # Serialization
+        _wrap(kser, "schemas.Message.dump", _winject(tracer))
+        _wrap(kser, "schemas.Message.dumps", _winject(tracer))
 
         # tasks & operations
         # _wrap(kser, "entry.Entrypoint._post_init", _wtrigger(tracer))
@@ -121,7 +144,8 @@ class KserInstrumentor(BaseInstrumentor):
         )
 
     def _uninstrument(self, **kwargs):
-        # unwrap(kser.entry.Entrypoint, "_post_init")
+        unwrap(kser.schemas.Message, "dump")
+        unwrap(kser.schemas.Message, "dumps")
         unwrap(kser.entry.Entrypoint, "_prerun")
         unwrap(kser.entry.Entrypoint, "_postrun")
         unwrap(kser.entry.Entrypoint, "_run")
