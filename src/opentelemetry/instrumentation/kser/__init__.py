@@ -10,6 +10,7 @@ import json
 from typing import Collection
 
 import kser.entry
+import kser.controller
 import kser.sequencing.operation
 from cdumay_result import Result
 from kser import __version__ as kversion, __hostname__
@@ -36,12 +37,20 @@ def _with_tracer_wrapper(func):
 
 
 @_with_tracer_wrapper
-def _winject(_tracer, wrapped, instance, args, kwargs):
+def _winject(_tracer, wrapped, _, args, kwargs):
     """Inject current trace context into message"""
-    trace_info = dict()
-    get_global_textmap().inject(carrier=trace_info)
-    if len(trace_info) != 0:
-        instance.metadata.update(tracing=trace_info)
+    tracing = dict()
+    get_global_textmap().inject(carrier=tracing)
+
+    if len(tracing) > 0:
+        if "kmsg" in kwargs:
+            if isinstance(kwargs['kmsg'], Message):
+                kwargs['kmsg'].metadata.update(tracing=tracing)
+        else:
+            for arg in args:
+                if isinstance(arg, Message):
+                    arg.metadata.update(tracing=tracing)
+                    break
     return wrapped(*args, **kwargs)
 
 
@@ -101,8 +110,7 @@ class KserInstrumentor(BaseInstrumentor):
         tracer = get_tracer(__name__, __version__, tracer_provider)
 
         # Serialization
-        _wrap(kser, "schemas.Message.dump", _winject(tracer))
-        _wrap(kser, "schemas.Message.dumps", _winject(tracer))
+        _wrap(kser, "controller.BaseProducer.send", _winject(tracer))
 
         # tasks & operations
         # _wrap(kser, "entry.Entrypoint._post_init", _wtrigger(tracer))
@@ -144,8 +152,8 @@ class KserInstrumentor(BaseInstrumentor):
         )
 
     def _uninstrument(self, **kwargs):
-        unwrap(kser.schemas.Message, "dump")
-        unwrap(kser.schemas.Message, "dumps")
+        unwrap(kser.controller.BaseProducer, "send")
+
         unwrap(kser.entry.Entrypoint, "_prerun")
         unwrap(kser.entry.Entrypoint, "_postrun")
         unwrap(kser.entry.Entrypoint, "_run")

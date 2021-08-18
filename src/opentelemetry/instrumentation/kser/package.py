@@ -6,4 +6,4 @@
 
 
 """
-_instruments = ("kser >= 0.8.23",)
+_instruments = ("kser >= 0.8.24",)
