@@ -63,7 +63,7 @@ def _wtrigger(tracer, wrapped, instance, args, kwargs):
         context = get_global_textmap().extract(carrier=tracing)
 
     with tracer.start_as_current_span(
-            sname, context=context, kind=SpanKind.INTERNAL) as span:
+            sname, context=context, kind=SpanKind.SERVER) as span:
         if span.is_recording():
             span.set_attribute(f'kser.hostname', __hostname__)
             span.set_attribute(f'kser.version', kversion)
