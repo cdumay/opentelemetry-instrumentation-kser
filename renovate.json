@@ -8,8 +8,6 @@
       "matchPackagePatterns": [
         "opentelemetry-*"
       ],
-      "regexStrategy": true,
-      "rangeStrategy": "replace",
       "versioning": "python"
     }
   ]
