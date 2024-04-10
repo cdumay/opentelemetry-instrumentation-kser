@@ -3,6 +3,8 @@
   "extends": [
     "config:base"
   ],
+  "separateMajorMinor": false,
+  "separateMinorPatch": false,
   "packageRules": [
     {
       "matchPaths": [
