@@ -5,10 +5,10 @@
   ],
   "packageRules": [
     {
-      "matchPackagePatterns": [
-        "opentelemetry-*"
+      "matchPaths": [
+        "*"
       ],
-      "versioning": "python"
+      "ignoreUnstable": false
     }
   ]
 }
