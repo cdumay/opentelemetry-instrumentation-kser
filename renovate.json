@@ -1,17 +1,17 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:base"
+    "config:base",
+    "group:all"
   ],
   "packageRules": [
     {
+      "ignoreUnstable": false,
       "matchPaths": [
         "*"
-      ],
-      "extends": "group:all",
-      "separateMajorMinor": false,
-      "separateMinorPatch": false,
-      "ignoreUnstable": false
+      ]
     }
-  ]
+  ],
+  "separateMajorMinor": false,
+  "separateMinorPatch": false
 }
