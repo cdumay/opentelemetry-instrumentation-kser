@@ -9,7 +9,14 @@
       "ignoreUnstable": false,
       "matchPaths": [
         "*"
-      ]
+      ],
+      "postUpgradeTasks": {
+        "commands": [
+          "version=$(grep 'opentelemetry-semantic-conventions==' \"requirements.txt\" | cut -d'=' -f3)",
+          "sed -i -e \"s/__version__ = .*$/__version__ = '$version'/g\" src/opentelemetry/instrumentation/kser/version.py"
+        ],
+        "executionMode": "branch"
+      }
     }
   ],
   "separateMajorMinor": false,
