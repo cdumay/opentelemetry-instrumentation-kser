@@ -1,4 +1,4 @@
-opentelemetry-api==1.25.0
-opentelemetry-semantic-conventions==0.46b0
-opentelemetry-instrumentation==0.46b0
-opentelemetry-util-http==0.46b0
+opentelemetry-api==1.26.0
+opentelemetry-semantic-conventions==0.47b0
+opentelemetry-instrumentation==0.47b0
+opentelemetry-util-http==0.47b0
