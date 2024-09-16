@@ -3,11 +3,11 @@ name: CI
 on:
   pull_request:
     types: [opened, synchronize]
-    branches:
-      - "renovate/**"
+    branches: ["renovate/**"]
 
 jobs:
   add-file:
+    runs-on: ubuntu-latest
     steps:
     # Step 1: Check out the repository
     - name: Checkout repository
