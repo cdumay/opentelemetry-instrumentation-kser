@@ -4,10 +4,6 @@
     "config:base",
     "group:all"
   ],
-  "allowedPostUpgradeCommands": [
-    "^version=.*$",
-    "^sed -i -e .*$"
-  ],
   "packageRules": [
     {
       "ignoreUnstable": false,
@@ -16,8 +12,7 @@
       ],
       "postUpgradeTasks": {
         "commands": [
-          "version=$(grep 'opentelemetry-semantic-conventions==' \"requirements.txt\" | cut -d'=' -f3)",
-          "sed -i -e \"s/__version__ = .*$/__version__ = '$version'/g\" src/opentelemetry/instrumentation/kser/version.py"
+          "sed -i -e \"s/__version__ = .*$/__version__ = '$(grep 'opentelemetry-semantic-conventions==' requirements.txt | cut -d'=' -f3)'/g\" src/opentelemetry/instrumentation/kser/version.py"
         ],
         "executionMode": "branch"
       }
