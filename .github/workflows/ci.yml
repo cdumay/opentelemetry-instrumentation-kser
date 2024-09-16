@@ -7,12 +7,32 @@ on:
       - "renovate/**"
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  add-file:
     steps:
-      - uses: actions/checkout@v2
-      - name: Dump version
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14'
-      - run: sed -i -e "s/__version__ = .*$/__version__ = '$(grep 'opentelemetry-semantic-conventions==' requirements.txt | cut -d'=' -f3)'/g" src/opentelemetry/instrumentation/kser/version.py
+    # Step 1: Check out the repository
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.head_ref }}
+
+    # Step 2: Bump version
+    - name: Bump version
+      run: |
+        sed -i -e "s/__version__ = .*$/__version__ = '$(grep 'opentelemetry-semantic-conventions==' requirements.txt | cut -d'=' -f3)'/g" src/opentelemetry/instrumentation/kser/version.py
+
+    # Step 3: Configure Git (to commit changes)
+    - name: Configure Git
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+    # Step 4: Commit the changes
+    - name: Commit changes
+      run: |
+        git add src/opentelemetry/instrumentation/kser/version.py
+        git commit -m "build: Bump version"
+
+    # Step 5: Push changes back to the branch
+    - name: Push changes
+      run: |
+        git push origin HEAD:${{ github.head_ref }}
