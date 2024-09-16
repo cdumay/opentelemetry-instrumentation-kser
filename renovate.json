@@ -4,6 +4,10 @@
     "config:base",
     "group:all"
   ],
+  "allowedPostUpgradeCommands": [
+    "^version=.*$",
+    "^sed -i -e .*$"
+  ],
   "packageRules": [
     {
       "ignoreUnstable": false,
