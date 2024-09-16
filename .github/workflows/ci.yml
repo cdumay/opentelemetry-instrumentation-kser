@@ -3,15 +3,19 @@ name: CI
 on:
   pull_request:
     types: [opened, synchronize]
-    branches: ["renovate/**"]
+    branches: ["renovate/all"]
 
 jobs:
-  add-file:
+  dump_version:
     runs-on: ubuntu-latest
+    name: Dump version
+    permissions:
+      pull-requests: write
+      contents: write
     steps:
     # Step 1: Check out the repository
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         ref: ${{ github.head_ref }}
 
