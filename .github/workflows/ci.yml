@@ -2,7 +2,7 @@ name: CI
 on:
   pull_request:
     branches:
-    - renovate/all
+    - 'renovate/all'
     types:
     - opened
     - synchronize
