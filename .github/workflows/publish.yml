@@ -16,8 +16,8 @@ jobs:
         run: pip install build twine
       - name: Build the package
         run: python -m build --sdist
-#      - name: Publish on PyPI
-#        env:
-#          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-#          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-#        run: twine upload dist/*
+      - name: Publish on PyPI
+        env:
+          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        run: twine upload dist/*
