@@ -13,5 +13,7 @@
     }
   ],
   "separateMajorMinor": false,
-  "separateMinorPatch": false
+  "separateMinorPatch": false,
+  "minimumReleaseAge": "3 days",
+  "dependencyDashboard": false
 }
