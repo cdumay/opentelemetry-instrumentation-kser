@@ -21,7 +21,9 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        sed -i -e "s/__version__ = .*$/__version__ = '$(grep 'opentelemetry-semantic-conventions==' requirements.txt | cut -d'=' -f3)'/g" src/opentelemetry/instrumentation/kser/version.py
+        VERSION=$(grep 'opentelemetry-semantic-conventions==' requirements.txt | cut -d'=' -f3)
+        sed -i -e "s/__version__ = .*$/__version__ = '$VERSION'/g" src/opentelemetry/instrumentation/kser/version.py
         git add src/opentelemetry/instrumentation/kser/version.py
-        git commit -m "chore: Bump version"
-        git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git HEAD:master
+        git commit -m "chore: Bump version to $VERSION"
+        git tag v$VERSION
+        git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git HEAD:master --tags
