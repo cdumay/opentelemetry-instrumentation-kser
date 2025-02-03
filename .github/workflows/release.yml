@@ -1,8 +1,9 @@
-name: CI
+name: Release Python Package
 permissions:
   contents: write
 on:
   pull_request:
+    paths: "requirements.txt" # Check requirements.txt because github actions can be updated too
     branches:
       - master
     types:
