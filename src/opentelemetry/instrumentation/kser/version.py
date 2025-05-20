@@ -5,4 +5,4 @@
 .. codeauthor:: Cédric Dumay <cedric.dumay@gmail.com>
 
 """
-__version__ = '0.52b0'
+__version__ = '0.54b1'
