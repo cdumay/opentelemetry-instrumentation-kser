@@ -28,3 +28,12 @@ jobs:
         git commit -m "chore: Bump version to $VERSION"
         git tag v$VERSION
         git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git HEAD:master --tags
+    - name: Install dependencies
+      run: pip install build twine
+    - name: Build the package
+      run: python -m build --sdist
+    - name: Publish on PyPI
+      env:
+        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+      run: twine upload dist/*
