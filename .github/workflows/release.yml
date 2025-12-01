@@ -7,13 +7,21 @@ on:
     branches:
       - master
     types:
-      - closed
+      - opened
+      - synchronize
+      - ready_for_review
 jobs:
   dump_version:
+    if: github.head_ref == 'renovate/all'
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.merged == true && github.event.pull_request.head.ref == 'renovate/all' }}
     steps:
     - uses: actions/checkout@v6
+    - name: Enable auto-merge
+      uses: peter-evans/enable-pull-request-automerge@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        merge_method: squash
+        pull-request-number: ${{ github.event.pull_request.number }}
     - name: Configure Git
       run: |
         git config --global user.name "github-actions[bot]"
@@ -31,7 +39,7 @@ jobs:
     - name: Install dependencies
       run: pip install build twine
     - name: Build the package
-      run: python -m build --sdist
+      run: python setup.py sdist bdist_wheel
     - name: Publish on PyPI
       env:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
